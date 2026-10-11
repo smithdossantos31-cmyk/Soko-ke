@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOKO KE | Your Market, Your Kenya</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7f5;color:#17231b}
+header{background:#08783e;color:white;padding:22px 16px;text-align:center}
+header h1{margin:0;font-size:32px}
+header p{margin:8px 0 0}
+nav{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;background:#111;color:white;padding:14px}
+nav a{color:white;text-decoration:none;font-weight:bold}
+.hero{padding:35px 18px;text-align:center;background:#e4f4e9}
+.hero h2{font-size:30px;margin:0 0 12px}
+button{background:#08783e;color:white;border:0;padding:12px 16px;border-radius:8px;cursor:pointer;font-weight:bold}
+main{max-width:1100px;margin:auto;padding:20px}
+input,select,textarea{width:100%;padding:12px;margin:7px 0 14px;border:1px solid #ccd5ce;border-radius:7px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.card{background:white;padding:14px;border-radius:12px;box-shadow:0 2px 9px #0001}
+.photo{height:150px;background:#e7eee9;display:flex;align-items:center;justify-content:center;font-size:55px;border-radius:8px}
+.price{color:#08783e;font-weight:bold;font-size:19px}
+section{margin:28px 0}
+footer{background:#111;color:white;text-align:center;padding:25px}
+.small{color:#637066;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>🇰🇪 SOKO KE</h1>
+<p>Your Market, Your Kenya</p>
+</header>
+<nav>
+<a href="#home">Home</a>
+<a href="#products">Products</a>
+<a href="#sell">Sell</a>
+<a href="#cart">Cart (<span id="count">0</span>)</a>
+<a href="#contact">Contact</a>
+</nav>
+<div class="hero" id="home">
+<h2>Discover your next favourite thing.</h2>
+<p>Shop local. Support Kenyan sellers.</p>
+<a href="#products"><button>Explore Products</button></a>
+</div>
+<main>
+<section id="products">
+<h2>Explore Products</h2>
+<input id="search" placeholder="Search products..." oninput="render()">
+<select id="category" onchange="render()">
+<option value="All">All categories</option>
+<option>Electronics</option><option>Fashion</option><option>Shoes</option><option>Home & Living</option><option>Beauty</option><option>Other</option>
+</select>
+<div class="products" id="grid"></div>
+</section>
+<section id="cart">
+<h2>Your Shopping Cart 🛒</h2>
+<div id="cartItems">Your cart is empty.</div>
+<h3 id="total">Total: KSh 0</h3>
+<p class="small">Demo cart only. Contact the seller to arrange a purchase.</p>
+</section>
+<section id="sell">
+<h2>Sell on SOKO KE</h2>
+<p class="small">Demo listing form. Listings added here stay in this browser only.</p>
+<form id="sellForm">
+<label>Product name</label><input id="pname" required placeholder="e.g. Kenya football jersey">
+<label>Price (KSh)</label><input id="pprice" type="number" min="1" required placeholder="e.g. 1500">
+<label>Category</label><select id="pcat"><option>Fashion</option><option>Electronics</option><option>Shoes</option><option>Home & Living</option><option>Beauty</option><option>Other</option></select>
+<label>Product description</label><textarea id="pdesc" placeholder="Describe your product"></textarea>
+<label>Product photo</label><input id="pimage" type="file" accept="image/*">
+<button type="submit">Add Product</button>
+</form>
+</section>
+<section id="contact">
+<h2>Contact SOKO KE</h2>
+<p>Questions about buying or selling? Contact us on WhatsApp.</p>
+<a href="https://wa.me/905518562724" target="_blank" rel="noopener"><button>Chat on WhatsApp</button></a>
+</section>
+</main>
+<footer><h3>SOKO KE 🇰🇪</h3><p>Your Market, Your Kenya</p><p>Made for the Kenyan marketplace.</p></footer>
+<script>
+let products=[
+{id:1,name:"Kenya Football Jersey",price:1500,category:"Fashion",desc:"Show your Kenyan pride.",emoji:"👕"},
+{id:2,name:"Wireless Headphones",price:2500,category:"Electronics",desc:"Enjoy your favourite sounds.",emoji:"🎧"},
+{id:3,name:"Everyday Sneakers",price:3000,category:"Shoes",desc:"Comfort for everyday life.",emoji:"👟"},
+{id:4,name:"Classic Backpack",price:1800,category:"Other",desc:"Ready for school or travel.",emoji:"🎒"},
+{id:5,name:"Home Coffee Mug",price:450,category:"Home & Living",desc:"Your daily cup.",emoji:"☕"},
+{id:6,name:"Beauty Essentials",price:900,category:"Beauty",desc:"Everyday self-care.",emoji:"🧴"}
+];
+let cart=[];
+function money(n){return "KSh "+Number(n).toLocaleString("en-KE")}
+function render(){
+let q=document.getElementById("search").value.toLowerCase();
+let c=document.getElementById("category").value;
+let shown=products.filter(p=>p.name.toLowerCase().includes(q)&&(c==="All"||p.category===c));
+document.getElementById("grid").innerHTML=shown.map(p=>`<article class="card"><div class="photo">${p.emoji||"🛍️"}</div><h3>${p.name}</h3><p>${p.desc||""}</p><p>${p.category}</p><p class="price">${money(p.price)}</p><button onclick="add(${p.id})">Add to Cart</button></article>`).join("")||"<p>No products found.</p>";
+document.getElementById("count").textContent=cart.reduce((s,p)=>s+p.qty,0);
+document.getElementById("cartItems").innerHTML=cart.length?cart.map(p=>`<p>${p.name} × ${p.qty} — ${money(p.price*p.qty)} <button onclick="removeItem(${p.id})">Remove</button></p>`).join(""):"Your cart is empty.";
+document.getElementById("total").textContent="Total: "+money(cart.reduce((s,p)=>s+p.price*p.qty,0));
+}
+function add(id){let p=cart.find(x=>x.id===id);if(p)p.qty++;else{let product=products.find(x=>x.id===id);cart.push({...product,qty:1})}render()}
+function removeItem(id){cart=cart.filter(p=>p.id!==id);render()}
+document.getElementById("sellForm").addEventListener("submit",function(e){
+e.preventDefault();
+let file=document.getElementById("pimage").files[0];
+let product={id:Date.now(),name:document.getElementById("pname").value,price:Number(document.getElementById("pprice").value),category:document.getElementById("pcat").value,desc:document.getElementById("pdesc").value,emoji:"🛍️"};
+if(file){let reader=new FileReader();reader.onload=()=>{product.photo=reader.result;product.emoji="📷";products.unshift(product);render();};reader.readAsDataURL(file)}
+else{products.unshift(product);render()}
+this.reset();alert("Product added to this demo page!");
+});
+render();
+</script>
+</body>
+</html>
